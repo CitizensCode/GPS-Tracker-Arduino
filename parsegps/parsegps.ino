@@ -30,7 +30,7 @@
 
 // If using software serial, keep this line enabled
 // (you can change the pin numbers to match your wiring):
-SoftwareSerial mySerial(3, 2); // mySerial(TX, RX)
+SoftwareSerial mySerial(3, 2);
 
 // If using hardware serial (e.g. Arduino Mega), comment out the
 // above SoftwareSerial line, and enable this line instead
@@ -44,11 +44,11 @@ Adafruit_GPS GPS(&mySerial);
 
 // Set GPSECHO to 'false' to turn off echoing the GPS data to the Serial console
 // Set to 'true' if you want to debug and listen to the raw GPS sentences. 
-#define GPSECHO  false
+#define GPSECHO  true
 
 // this keeps track of whether we're using the interrupt
 // off by default!
-boolean usingInterrupt = true;
+boolean usingInterrupt = false;
 void useInterrupt(boolean); // Func prototype keeps Arduino 0023 happy
 
 void setup()  
@@ -57,7 +57,7 @@ void setup()
   // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
   // also spit it out
   Serial.begin(115200);
-  Serial.println("GPS starting...");
+  Serial.println("Adafruit GPS library basic test!");
 
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
   GPS.begin(9600);
@@ -71,7 +71,6 @@ void setup()
   
   // Set the update rate
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);   // 1 Hz update rate
-  // GPS.sendCommand(PMTK_SET_NMEA_UPDATE_200_MILLIHERTZ);   // 200 mHz, or once every 5 seconds
   // For the parsing code to work nicely and have time to sort thru the data, and
   // print it out we don't suggest using anything higher than 1 Hz
 
@@ -142,8 +141,8 @@ void loop()                     // run over and over again
   // if millis() or timer wraps around, we'll just reset it
   if (timer > millis())  timer = millis();
 
-  // approximately every 5 seconds or so, print out the current stats
-  if (millis() - timer > 5000) { 
+  // approximately every 2 seconds or so, print out the current stats
+  if (millis() - timer > 2000) { 
     timer = millis(); // reset the timer
     
     Serial.print("\nTime: ");
@@ -167,7 +166,7 @@ void loop()                     // run over and over again
       Serial.print(", "); 
       Serial.println(GPS.longitudeDegrees, 4);
       
-      Serial.print("Speed (km/h): "); Serial.println(GPS.speed * 1.852);
+      Serial.print("Speed (knots): "); Serial.println(GPS.speed);
       Serial.print("Angle: "); Serial.println(GPS.angle);
       Serial.print("Altitude: "); Serial.println(GPS.altitude);
       Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
