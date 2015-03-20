@@ -12,7 +12,26 @@
 // and help support open source hardware & software! -ada
 
 #include <Adafruit_GPS.h>
+#include <ccspi.h>
+#include <SPI.h>
 #include <SoftwareSerial.h>
+
+// CC3000 interrupt and control pins
+#define ADAFRUIT_CC3000_IRQ 2 // MUST be an interrupt pin!
+#define ADAFRUIT_CC3000_VBAT 7
+#define ADAFRUIT_CC3000_CS 10
+
+// Hardware SPI required for remaining pins.
+// On an UNO, SCK = 13, MISO = 12, and MOSI = 11
+Adafruit_CC3000 cc3000 = Adafruit_CC3000(
+  ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
+  SPI_CLOCK_DIVIDER);
+  
+// Wifi access credentials
+// WiFi access point credentials
+#define WLAN_SSID     ""  // 32 characters max
+#define WLAN_PASS     ""
+#define WLAN_SECURITY WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
 
 // If you're using a GPS module:
 // Connect the GPS Power pin to 5V
