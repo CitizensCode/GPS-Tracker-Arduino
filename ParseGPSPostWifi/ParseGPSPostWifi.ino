@@ -12,6 +12,7 @@
 // and help support open source hardware & software! -ada
 
 #include <Adafruit_GPS.h>
+#include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
 #include <SoftwareSerial.h>
@@ -32,6 +33,17 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(
 #define WLAN_SSID     ""  // 32 characters max
 #define WLAN_PASS     ""
 #define WLAN_SECURITY WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
+
+// API URL
+#define WEBSITE "citizenscode-gpstracker-api.herokuapp.com"
+const unsigned long
+  dhcpTimeout     = 60L * 1000L, // Max time to wait for address from DHCP
+  connectTimeout  = 15L * 1000L, // Max time to wait for server connection
+  responseTimeout = 15L * 1000L; // Max time to wait for data from server
+unsigned long
+  currentTime = 0L;
+Adafruit_CC3000_Client
+  client;
 
 // If you're using a GPS module:
 // Connect the GPS Power pin to 5V
@@ -72,12 +84,10 @@ void useInterrupt(boolean); // Func prototype keeps Arduino 0023 happy
 
 void setup()  
 {
-    
   // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
   // also spit it out
   Serial.begin(115200);
-  // Serial.println("GPS starting...");
-
+  Serial.println("GPS starting...");
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
   GPS.begin(9600);
   
@@ -101,10 +111,62 @@ void setup()
   // every 1 millisecond, and read data from the GPS for you. that makes the
   // loop code a heck of a lot easier!
   useInterrupt(true);
-
+  
   delay(1000);
   // Ask for firmware version
   mySerial.println(PMTK_Q_RELEASE);
+  
+  Serial.println(F("\nWifi starting..."));
+  if (!cc3000.begin())
+  {
+    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
+    while(1);
+  }
+
+  // Delete old connection data on the module
+  Serial.println(F("\nDeleting old connection profiles"));
+  if (!cc3000.deleteProfiles()) {
+    Serial.println(F("Failed!"));
+    while(1);
+  }
+
+  /* Attempt to connect to an access point */
+  char *ssid = WLAN_SSID;             /* Max 32 chars */
+  Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
+
+  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
+    Serial.println(F("Failed!"));
+    while(1);
+  }
+
+  Serial.println(F("Connected!"));
+
+  /* Wait for DHCP to complete */
+  Serial.println(F("Request DHCP"));
+  while (!cc3000.checkDHCP())
+  {
+    delay(100);
+  }
+
+  uint32_t ip = 0L;
+  Serial.print(WEBSITE); Serial.print(F(" -> "));
+  while (ip == 0) {
+    if (!cc3000.getHostByName(WEBSITE, &ip)) {
+      Serial.println(F("Couldn't resolve!"));
+    }
+    delay(500);
+  }
+
+  /* Try connecting to the website.
+     Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
+  */
+  Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
+  if (www.connected()) {
+    www.fastrprint(F("POST "));
+    www.fastrprint(F(" HTTP/1.1\r\n"));
+    www.fastrprint(F("Host: "));
+    www.fastrprint(WEBSITE);
+    www.fastrprint(F("\r\n"));
 }
 
 
