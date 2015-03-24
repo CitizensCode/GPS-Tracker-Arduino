@@ -163,10 +163,28 @@ void setup()
   Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
   if (www.connected()) {
     www.fastrprint(F("POST "));
+    www.fastrprint(F("/")); // Root directory
     www.fastrprint(F(" HTTP/1.1\r\n"));
     www.fastrprint(F("Host: "));
     www.fastrprint(WEBSITE);
     www.fastrprint(F("\r\n"));
+    www.fastrprint(F("Content-Length: 24\r\n"));
+    www.fastrprint(F("Accept-Encoding: gzip, deflate\r\n"));
+    www.fastrprint(F("Accept: */*\r\n"));
+    www.fastrprint(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
+    www.fastrprint(F("Connection: keep-alive\r\n"));
+    www.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
+    www.fastrprint(F("lat=45.9588&lng=-66.6482"));
+    www.fastrprint(F("\r\n"));
+    www.println();
+  } else {
+    Serial.println(F("Connection failed"));    
+    return;
+  }
+
+  Serial.println(F("\n\nClosing the connection"));
+  cc3000.disconnect();
+
 }
 
 
@@ -197,6 +215,7 @@ void useInterrupt(boolean v) {
 }
 
 uint32_t timer = millis();
+
 void loop()                     // run over and over again
 {
   // in case you are not using the interrupt above, you'll
