@@ -164,30 +164,31 @@ void setup()
   if (client.connected()) {
     Serial.println(F("Posting data..."));
     client.fastrprint(F("POST "));
-    Serial.println(F("POST "));
+    Serial.print(F("POST "));
     client.fastrprint(F("/")); // Root directory
-    Serial.println(F("/")); // Root directory
+    Serial.print(F("/")); // Root directory
     client.fastrprint(F(" HTTP/1.1\r\n"));
-    Serial.println(F(" HTTP/1.1\r\n"));
+    Serial.print(F(" HTTP/1.1\r\n"));
     client.fastrprint(F("Host: "));
-    Serial.println(F("Host: "));
+    Serial.print(F("Host: "));
     client.fastrprint(WEBSITE);
-    Serial.println(WEBSITE);
+    Serial.print(WEBSITE);
     client.fastrprint(F("\r\n"));
+    Serial.print(F("\r\n"));
     client.fastrprint(F("Content-Length: 24\r\n"));
-    Serial.println(F("Content-Length: 24\r\n"));
+    Serial.print(F("Content-Length: 24\r\n"));
     client.fastrprint(F("Accept-Encoding: gzip, deflate\r\n"));
-    Serial.println(F("Accept-Encoding: gzip, deflate\r\n"));
+    Serial.print(F("Accept-Encoding: gzip, deflate\r\n"));
     client.fastrprint(F("Accept: */*\r\n"));
-    Serial.println(F("Accept: */*\r\n"));
+    Serial.print(F("Accept: */*\r\n"));
     client.fastrprint(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
-    Serial.println(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
+    Serial.print(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
     client.fastrprint(F("Connection: keep-alive\r\n"));
-    Serial.println(F("Connection: keep-alive\r\n"));
+    Serial.print(F("Connection: keep-alive\r\n"));
     client.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
-    Serial.println(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
+    Serial.print(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
     client.fastrprint(F("lat=45.9588&lng=-66.6482"));
-    Serial.println(F("lat=45.9588&lng=-66.6482"));
+    Serial.print(F("lat=45.9588&lng=-66.6482"));
     client.fastrprint(F("\r\n"));
     Serial.println(F("Posting complete..."));
   } else {
