@@ -156,6 +156,7 @@ void setup()
     }
     delay(500);
   }
+  cc3000.printIPdotsRev(ip);
 
   /* Try connecting to the website.
      Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
