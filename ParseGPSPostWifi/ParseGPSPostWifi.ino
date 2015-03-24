@@ -42,8 +42,6 @@ const unsigned long
   responseTimeout = 15L * 1000L; // Max time to wait for data from server
 unsigned long
   currentTime = 0L;
-Adafruit_CC3000_Client
-  client;
 
 // If you're using a GPS module:
 // Connect the GPS Power pin to 5V
@@ -157,32 +155,45 @@ void setup()
     delay(500);
   }
   cc3000.printIPdotsRev(ip);
+  Serial.println();
 
   /* Try connecting to the website.
      Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
   */
-  Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
-  if (www.connected()) {
-    www.fastrprint(F("POST "));
-    www.fastrprint(F("/")); // Root directory
-    www.fastrprint(F(" HTTP/1.1\r\n"));
-    www.fastrprint(F("Host: "));
-    www.fastrprint(WEBSITE);
-    www.fastrprint(F("\r\n"));
-    www.fastrprint(F("Content-Length: 24\r\n"));
-    www.fastrprint(F("Accept-Encoding: gzip, deflate\r\n"));
-    www.fastrprint(F("Accept: */*\r\n"));
-    www.fastrprint(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
-    www.fastrprint(F("Connection: keep-alive\r\n"));
-    www.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
-    www.fastrprint(F("lat=45.9588&lng=-66.6482"));
-    www.fastrprint(F("\r\n"));
-    www.println();
+  Adafruit_CC3000_Client client = cc3000.connectTCP(ip, 80);
+  if (client.connected()) {
+    Serial.println(F("Posting data..."));
+    client.fastrprint(F("POST "));
+    Serial.println(F("POST "));
+    client.fastrprint(F("/")); // Root directory
+    Serial.println(F("/")); // Root directory
+    client.fastrprint(F(" HTTP/1.1\r\n"));
+    Serial.println(F(" HTTP/1.1\r\n"));
+    client.fastrprint(F("Host: "));
+    Serial.println(F("Host: "));
+    client.fastrprint(WEBSITE);
+    Serial.println(WEBSITE);
+    client.fastrprint(F("\r\n"));
+    client.fastrprint(F("Content-Length: 24\r\n"));
+    Serial.println(F("Content-Length: 24\r\n"));
+    client.fastrprint(F("Accept-Encoding: gzip, deflate\r\n"));
+    Serial.println(F("Accept-Encoding: gzip, deflate\r\n"));
+    client.fastrprint(F("Accept: */*\r\n"));
+    Serial.println(F("Accept: */*\r\n"));
+    client.fastrprint(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
+    Serial.println(F("User-Agent: Arduino-GPS-Wifi v1.0\r\n"));
+    client.fastrprint(F("Connection: keep-alive\r\n"));
+    Serial.println(F("Connection: keep-alive\r\n"));
+    client.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
+    Serial.println(F("Content-Type: application/x-www-form-urlencoded\r\n\r\n"));
+    client.fastrprint(F("lat=45.9588&lng=-66.6482"));
+    Serial.println(F("lat=45.9588&lng=-66.6482"));
+    client.fastrprint(F("\r\n"));
+    Serial.println(F("Posting complete..."));
   } else {
     Serial.println(F("Connection failed"));    
     return;
   }
-
   Serial.println(F("\n\nClosing the connection"));
   cc3000.disconnect();
 
