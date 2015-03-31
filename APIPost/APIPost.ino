@@ -41,8 +41,8 @@ It might not work on all networks!
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
                                          SPI_CLOCK_DIVIDER); // you can change this clock speed
 
-#define WLAN_SSID       "WylCreativeCommons"           // cannot be longer than 32 characters!
-#define WLAN_PASS       "mentalhealth11"
+#define WLAN_SSID       "B24"           // cannot be longer than 32 characters!
+#define WLAN_PASS       ""
 // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define WLAN_SECURITY   WLAN_SEC_WPA2
 
@@ -129,15 +129,13 @@ void setup(void)
     www.fastrprint(F(" / "));
     www.fastrprint(F("HTTP/1.1\r\n"));
     www.fastrprint(F("Host: citizenscode-gpstracker-api.herokuapp.com\r\n"));
-    www.fastrprint(F("Accept-Encoding: gzip, deflate\r\n"));
+    www.fastrprint(F("Content-Length: 24\r\n"));
     www.fastrprint(F("Accept: */*\r\n"));
     www.fastrprint(F("User-Agent: Arduino\r\n"));
     www.fastrprint(F("Connection: keep-alive\r\n"));
     www.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n"));
     www.fastrprint(F("\r\n"));
     www.fastrprint(F("lat=45.9588&lng=-66.6482"));
-    www.fastrprint(F("\r\n"));
-    www.fastrprint(F("\r\n"));
     
   } else {
     Serial.println(F("Connection failed"));    
