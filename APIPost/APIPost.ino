@@ -62,6 +62,7 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 /**************************************************************************/
 
 uint32_t ip;
+Adafruit_CC3000_Client www;
 
 void setup(void)
 {
@@ -123,7 +124,7 @@ void setup(void)
   /* Try connecting to the website.
      Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
   */
-  Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
+  www = cc3000.connectTCP(ip, 80);
   if (www.connected()) {
     www.fastrprint(F("POST"));
     www.fastrprint(F(" / "));
@@ -144,7 +145,9 @@ void setup(void)
 
   Serial.println(F("-------------------------------------"));
   
-  /* Read data until either the connection is closed, or the idle timeout is reached. */ 
+  /* Read data until either the connection is closed, or the idle
+  timeout is reached. Reads and prints the response one character at
+  a time. */ 
   unsigned long lastRead = millis();
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
@@ -153,19 +156,27 @@ void setup(void)
       lastRead = millis();
     }
   }
-  www.close();
-  Serial.println(F("-------------------------------------"));
-  
-  /* You need to make sure to clean up after yourself or the CC3000 can freak out */
-  /* the next time your try to connect ... */
-  Serial.println(F("\n\nDisconnecting"));
-  cc3000.disconnect();
-  
 }
 
 void loop(void)
 {
- delay(1000);
+ delay(3000);
+ if (www.connected()) {
+   www.fastrprint(F("POST"));
+   www.fastrprint(F(" / "));
+   www.fastrprint(F("HTTP/1.1\r\n"));
+   www.fastrprint(F("Host: citizenscode-gpstracker-api.herokuapp.com\r\n"));
+   www.fastrprint(F("Content-Length: 24\r\n"));
+   www.fastrprint(F("Accept: */*\r\n"));
+   www.fastrprint(F("User-Agent: Arduino\r\n"));
+   www.fastrprint(F("Connection: keep-alive\r\n"));
+   www.fastrprint(F("Content-Type: application/x-www-form-urlencoded\r\n"));
+   www.fastrprint(F("\r\n"));
+   www.fastrprint(F("lat=45.9588&lng=-66.6482"));
+ } else {
+   Serial.println(F("Connection failed"));    
+   return;
+ }
 }
 
 /**************************************************************************/
